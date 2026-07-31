@@ -1,35 +1,42 @@
 const AppError = require('../utils/AppError');
 
 const errorHandler = (err, req, res, next) => {
-  let error = { ...err, message: err.message, statusCode: err.statusCode || 500 };
+  let statusCode = err.statusCode || 500;
+  let message = err.message || 'Server Error';
 
   if (err.name === 'CastError') {
-    error = new AppError('Resource not found', 404);
-  }
-  if (err.code === 11000) {
+    statusCode = 404;
+    message = 'Resource not found';
+  } else if (err.code === 11000) {
     const field = Object.keys(err.keyValue || {})[0] || 'field';
-    error = new AppError(`Duplicate value for ${field}`, 400);
-  }
-  if (err.name === 'ValidationError') {
-    const messages = Object.values(err.errors).map((e) => e.message);
-    error = new AppError(messages.join('. '), 400);
-  }
-  if (err.name === 'JsonWebTokenError') {
-    error = new AppError('Invalid token. Please log in again.', 401);
-  }
-  if (err.name === 'TokenExpiredError') {
-    error = new AppError('Token expired. Please log in again.', 401);
+    statusCode = 400;
+    message = `Duplicate value for ${field}`;
+  } else if (err.name === 'ValidationError') {
+    statusCode = 400;
+    message = Object.values(err.errors)
+      .map((e) => e.message)
+      .join('. ');
+  } else if (err.name === 'JsonWebTokenError') {
+    statusCode = 401;
+    message = 'Invalid token. Please log in again.';
+  } else if (err.name === 'TokenExpiredError') {
+    statusCode = 401;
+    message = 'Token expired. Please log in again.';
   }
 
-  res.status(error.statusCode || 500).json({
+  const showStack =
+    process.env.NODE_ENV === 'development' && !process.env.VERCEL;
+
+  res.status(statusCode).json({
     success: false,
-    message: error.message || 'Server Error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    message,
+    ...(showStack && { stack: err.stack }),
   });
 };
 
+/** Only reached when no earlier route matched */
 const notFound = (req, res, next) => {
-  next(new AppError(`Not found - ${req.originalUrl}`, 404));
+  next(new AppError(`Not found - ${req.method} ${req.originalUrl}`, 404));
 };
 
 module.exports = { errorHandler, notFound };

@@ -9,13 +9,14 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const mongoose = require('mongoose');
 const validateEnv = require('./config/validateEnv');
 const connectDB = require('./config/db');
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 const sanitizeRequest = require('./middleware/sanitizeMiddleware');
 
 const app = express();
-const isProd = process.env.NODE_ENV === 'production';
+const isProd = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL);
 let envReady = false;
 
 const allowedOrigins = [
@@ -55,7 +56,49 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(sanitizeRequest);
 
-// Validate env + DB on first request (not at import) so Vercel can build the function
+if (!isProd) {
+  app.use(morgan('dev'));
+}
+
+const healthPayload = () => ({
+  success: true,
+  message: 'LuxeWatch API is running',
+  service: 'luxewatch-api',
+  env: process.env.NODE_ENV || 'development',
+  db: mongoose.connection.readyState === 1 ? 'connected' : 'pending',
+  timestamp: new Date().toISOString(),
+});
+
+// Public probes — registered BEFORE DB gate so deploys stay monitorable
+app.get('/', (req, res) => {
+  res.status(200).json(healthPayload());
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json(healthPayload());
+});
+
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'LuxeWatch API',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      products: '/api/products',
+      categories: '/api/categories',
+      orders: '/api/orders',
+      couriers: '/api/couriers',
+      users: '/api/users',
+    },
+  });
+});
+
+app.get('/api/health', (req, res) => {
+  res.status(200).json(healthPayload());
+});
+
+// Validate env + DB for application routes only
 app.use(async (req, res, next) => {
   try {
     if (!envReady) {
@@ -69,10 +112,6 @@ app.use(async (req, res, next) => {
   }
 });
 
-if (!isProd) {
-  app.use(morgan('dev'));
-}
-
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 const apiLimiter = rateLimit({
@@ -83,10 +122,6 @@ const apiLimiter = rateLimit({
 });
 app.use('/api/', apiLimiter);
 
-app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'LuxeWatch API is running' });
-});
-
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/categories', require('./routes/categoryRoutes'));
@@ -94,9 +129,9 @@ app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/couriers', require('./routes/courierRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 
+// 404 then central error handler (must stay last)
 app.use(notFound);
 app.use(errorHandler);
 
-// Vercel Node expects a default export; CommonJS module.exports covers both.
 module.exports = app;
 module.exports.default = app;
