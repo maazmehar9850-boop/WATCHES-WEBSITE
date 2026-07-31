@@ -11,10 +11,9 @@ const connectDB = require('./config/db');
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 const sanitizeRequest = require('./middleware/sanitizeMiddleware');
 
-validateEnv();
-
 const app = express();
 const isProd = process.env.NODE_ENV === 'production';
+let envReady = false;
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
@@ -53,9 +52,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(sanitizeRequest);
 
-// Ensure DB is ready (cached) before handling API traffic — needed on Vercel cold starts
+// Validate env + DB on first request (not at import) so Vercel can build the function
 app.use(async (req, res, next) => {
   try {
+    if (!envReady) {
+      validateEnv();
+      envReady = true;
+    }
     await connectDB();
     next();
   } catch (err) {
