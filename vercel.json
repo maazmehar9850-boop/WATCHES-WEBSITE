@@ -1,21 +1,18 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "server/src/app.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "client/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "outputDirectory": "client/dist",
+  "framework": null,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/uploads/(.*)", "destination": "/api" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "server/src/app.js" },
-    { "src": "/uploads/(.*)", "dest": "server/src/app.js" },
-    { "src": "/(.*)", "dest": "client/$1" }
-  ]
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "server/**",
+      "maxDuration": 30
+    }
+  }
 }
