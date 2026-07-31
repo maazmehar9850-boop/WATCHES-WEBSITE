@@ -19,15 +19,21 @@ const app = express();
 const isProd = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL);
 let envReady = false;
 
+const clientUrlOrigins = String(process.env.CLIENT_URL || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  ...clientUrlOrigins,
+  'https://watches-website-psi.vercel.app',
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
   'http://127.0.0.1:5173',
   'http://127.0.0.1:5174',
   'http://127.0.0.1:5175',
-].filter(Boolean);
+].filter((v, i, arr) => v && arr.indexOf(v) === i);
 
 app.set('trust proxy', 1);
 

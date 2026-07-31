@@ -1,7 +1,21 @@
 import axios from 'axios';
 
-// Prefer Vite proxy in browser; fall back to direct API if env is set
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+/**
+ * Separate Vercel projects: set VITE_API_URL to the API base (…/api).
+ * Same-origin / local Vite proxy: leave empty → "/api".
+ */
+const resolveApiBase = () => {
+  const raw = (import.meta.env.VITE_API_URL || '/api').trim();
+  if (!raw) return '/api';
+  return raw.replace(/\/+$/, '');
+};
+
+const API_URL = resolveApiBase();
+
+const apiOrigin = (() => {
+  if (!API_URL.startsWith('http')) return '';
+  return API_URL.replace(/\/api\/?$/, '');
+})();
 
 const api = axios.create({
   baseURL: API_URL,
@@ -40,14 +54,12 @@ export const mediaUrl = (path) => {
   if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
     return path;
   }
-  // Local uploads served by API
+  // Local uploads served by API host
   if (path.startsWith('/uploads')) {
-    const base = import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || '';
-    return `${base}${path}`;
+    return `${apiOrigin}${path}`;
   }
   if (path.startsWith('uploads/')) {
-    const base = import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || '';
-    return `${base}/${path}`;
+    return `${apiOrigin}/${path}`;
   }
   return path;
 };

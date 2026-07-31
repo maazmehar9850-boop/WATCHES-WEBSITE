@@ -22,7 +22,10 @@ const formatDate = (d) =>
     : '—';
 
 const trackUrl = (orderNumber) => {
-  const base = (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
+  const base = (
+    process.env.CLIENT_URL?.split(',')[0]?.trim() ||
+    'https://watches-website-psi.vercel.app'
+  ).replace(/\/$/, '');
   return `${base}/track-order?id=${encodeURIComponent(orderNumber)}`;
 };
 

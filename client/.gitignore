@@ -13,10 +13,11 @@ dist-ssr
 coverage
 .vite
 
-# Env — never commit real values (use .env.example)
+# Env — never commit secrets (use .env.example)
 .env
 .env.*
 !.env.example
+!.env.production
 *.local
 
 # Editor
