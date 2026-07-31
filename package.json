@@ -3,33 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "description": "LuxeWatch MERN e-commerce",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
     "dev": "npx concurrently@10.0.4 \"npm run server\" \"npm run client\"",
-    "server": "npm run dev --prefix server",
-    "client": "npm run dev --prefix client",
-    "build": "npm run build --prefix client",
-    "seed": "npm run seed --prefix server",
-    "install:all": "npm install && cd client && npm install"
+    "server": "npm run dev -w server",
+    "client": "npm run dev -w client",
+    "build": "npm run build -w client",
+    "seed": "npm run seed -w server",
+    "install:all": "npm install"
   },
   "engines": {
     "node": ">=18"
-  },
-  "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "cloudinary": "^1.41.3",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "express-mongo-sanitize": "^2.2.0",
-    "express-rate-limit": "^8.6.1",
-    "express-validator": "^7.3.2",
-    "helmet": "^8.3.0",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.8.1",
-    "morgan": "^1.11.0",
-    "multer": "^2.2.0",
-    "multer-storage-cloudinary": "^4.0.0",
-    "nodemailer": "^9.0.3"
   }
 }
