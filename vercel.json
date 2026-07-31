@@ -16,6 +16,9 @@
   "routes": [
     { "src": "/api/(.*)", "dest": "server/src/app.js" },
     { "src": "/uploads/(.*)", "dest": "server/src/app.js" },
-    { "src": "/(.*)", "dest": "client/$1" }
+    { "src": "/assets/(.*)", "dest": "client/assets/$1" },
+    { "src": "/favicon.ico", "dest": "client/favicon.ico" },
+    { "src": "/favicon.png", "dest": "client/favicon.png" },
+    { "src": "/(.*)", "dest": "client/index.html" }
   ]
 }

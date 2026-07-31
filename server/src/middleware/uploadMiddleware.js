@@ -1,12 +1,25 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const { cloudinary, isCloudinaryConfigured } = require('../config/cloudinary');
 const AppError = require('../utils/AppError');
 
-const uploadDir = path.join(__dirname, '../../uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+// Vercel serverless FS is read-only except /tmp — never mkdir under /var/task
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const uploadDir = isServerless
+  ? path.join(os.tmpdir(), 'luxewatch-uploads')
+  : path.join(__dirname, '../../uploads');
 
+try {
+  fs.mkdirSync(uploadDir, { recursive: true });
+} catch (err) {
+  // Don't crash the whole API if disk uploads aren't available
+  console.warn(`Upload dir unavailable (${uploadDir}): ${err.message}`);
+}
+
+// On Vercel without Cloudinary, keep files in memory (disk won't persist anyway)
+const useMemory = isCloudinaryConfigured || isServerless;
 const localStorage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => {
@@ -23,7 +36,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({
-  storage: isCloudinaryConfigured ? memoryStorage : localStorage,
+  storage: useMemory ? memoryStorage : localStorage,
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 },
 });
@@ -57,6 +70,11 @@ const processImages = async (req, res, next) => {
         }
       }
       req.uploadedImages = urls;
+    } else if (isServerless) {
+      // Persist as data URLs when no Cloudinary on serverless (demo-safe fallback)
+      req.uploadedImages = files
+        .filter((f) => f.buffer)
+        .map((f) => `data:${f.mimetype};base64,${f.buffer.toString('base64')}`);
     } else {
       req.uploadedImages = files.map((f) => `/uploads/${f.filename}`);
     }
