@@ -8,15 +8,34 @@ try {
   /* ignore */
 }
 
+let cached = global.__lw_mongoose;
+if (!cached) {
+  cached = global.__lw_mongoose = { conn: null, promise: null };
+}
+
 const connectDB = async () => {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose
+      .connect(process.env.MONGODB_URI, {
+        serverSelectionTimeoutMS: 20000,
+        family: 4,
+      })
+      .then((conn) => {
+        console.log(`MongoDB Connected: ${conn.connection.host}/${conn.connection.name}`);
+        return conn;
+      });
+  }
+
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 20000,
-      family: 4, // prefer IPv4 (avoids common Windows Atlas SRV/IPv6 failures)
-    });
-    console.log(`MongoDB Connected: ${conn.connection.host}/${conn.connection.name}`);
+    cached.conn = await cached.promise;
+    return cached.conn;
   } catch (error) {
+    cached.promise = null;
     console.error(`MongoDB Error: ${error.message}`);
+    // Never process.exit on Vercel — it kills the serverless isolate
+    if (process.env.VERCEL) throw error;
     process.exit(1);
   }
 };
