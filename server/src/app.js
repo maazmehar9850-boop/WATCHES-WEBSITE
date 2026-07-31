@@ -94,4 +94,6 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use(notFound);
 app.use(errorHandler);
 
+// Vercel Node expects a default export; CommonJS module.exports covers both.
 module.exports = app;
+module.exports.default = app;
