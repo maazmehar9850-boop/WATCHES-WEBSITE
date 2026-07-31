@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Outfit", system-ui, sans-serif;
+
+  --color-gold: #c9a227;
+  --color-gold-light: #e8d48b;
+  --color-gold-dark: #8a7019;
+  --color-ink: #0a0a0b;
+  --color-ink-soft: #141416;
+  --color-mist: #f5f2eb;
+  --color-mist-soft: #ebe6dc;
+  --color-slate-mute: #6b6560;
+}
+
+@layer base {
+  body {
+    @apply font-sans antialiased bg-mist text-ink;
+  }
+
+  html.dark {
+    --color-slate-mute: #a8a29a;
+  }
+
+  html.dark body {
+    @apply bg-ink text-mist;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+
+  img {
+    content-visibility: auto;
+  }
+}
+
+@layer components {
+  /* Solid surfaces — no backdrop-blur (major scroll jank source) */
+  .glass {
+    @apply bg-white/90 dark:bg-ink-soft/95 border border-black/10 dark:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.06)];
+  }
+
+  .glass-strong {
+    @apply bg-mist/95 dark:bg-ink/95 border border-black/10 dark:border-white/10;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-gold text-ink font-medium tracking-wide
+      hover:bg-gold-light transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 border border-gold text-gold
+      hover:bg-gold hover:text-ink transition-all duration-300;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm
+      hover:text-gold transition-colors duration-200;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-white dark:bg-ink-soft border border-black/10 dark:border-white/15
+      text-ink dark:text-mist
+      focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/40 transition-all
+      placeholder:text-slate-mute;
+  }
+
+  .input-field option {
+    @apply bg-white text-ink dark:bg-ink-soft dark:text-mist;
+  }
+
+  .section-pad {
+    @apply px-4 sm:px-6 lg:px-10 xl:px-16;
+  }
+
+  .page-wrap {
+    @apply max-w-7xl mx-auto;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c9a22766;
+  border-radius: 4px;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wh-glow,
+  [class*='animate-'] {
+    animation: none !important;
+  }
+}

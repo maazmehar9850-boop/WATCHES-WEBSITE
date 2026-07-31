@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Environment & secrets — NEVER commit real credentials
+.env
+.env.*
+!.env.example
+!**/.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+serviceAccount*.json
+
+# Build / coverage
+dist/
+build/
+coverage/
+.vite/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local uploads (user-generated)
+uploads/
+server/uploads/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Deploy tooling
+.vercel
+.netlify
+
+# Accidental nested installs
+client/client/
+client/server/
