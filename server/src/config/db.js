@@ -14,7 +14,9 @@ if (!cached) {
 }
 
 const connectDB = async () => {
-  if (cached.conn) return cached.conn;
+  if (cached.conn && mongoose.connection.readyState === 1) {
+    return cached.conn;
+  }
 
   if (!cached.promise) {
     cached.promise = mongoose
@@ -25,6 +27,11 @@ const connectDB = async () => {
       .then((conn) => {
         console.log(`MongoDB Connected: ${conn.connection.host}/${conn.connection.name}`);
         return conn;
+      })
+      .catch((error) => {
+        cached.promise = null;
+        cached.conn = null;
+        throw error;
       });
   }
 
@@ -32,11 +39,9 @@ const connectDB = async () => {
     cached.conn = await cached.promise;
     return cached.conn;
   } catch (error) {
-    cached.promise = null;
     console.error(`MongoDB Error: ${error.message}`);
-    // Never process.exit on Vercel — it kills the serverless isolate
-    if (process.env.VERCEL) throw error;
-    process.exit(1);
+    // Never kill the process — keep API up for /health; requests get 500 via error handler
+    throw error;
   }
 };
 
