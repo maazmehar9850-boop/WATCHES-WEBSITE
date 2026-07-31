@@ -3,22 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "description": "LuxeWatch MERN e-commerce",
-  "workspaces": [
-    "client",
-    "server"
-  ],
   "scripts": {
     "dev": "npx concurrently@10.0.4 \"npm run server\" \"npm run client\"",
-    "server": "npm run dev --workspace=server",
-    "client": "npm run dev --workspace=client",
-    "build": "npm run build --workspace=client",
-    "seed": "npm run seed --workspace=server",
-    "install:all": "npm install --legacy-peer-deps --no-audit --no-fund"
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "build": "npm run build --prefix client",
+    "seed": "npm run seed --prefix server",
+    "install:all": "npm install --prefix server && npm install --prefix client"
   },
   "engines": {
     "node": ">=18"
-  },
-  "devDependencies": {
-    "vite": "^8.1.1"
   }
 }
