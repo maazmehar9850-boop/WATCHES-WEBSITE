@@ -13,13 +13,24 @@ const FALLBACK_CAT_IMAGE =
 const HOME_CACHE_KEY = 'lw_home_v2';
 const HOME_CACHE_TTL = 5 * 60 * 1000;
 
+const asArray = (value) => (Array.isArray(value) ? value : []);
+
+function normalizeHomeData(data) {
+  if (!data || typeof data !== 'object') return null;
+  return {
+    trending: asArray(data.trending),
+    bestsellers: asArray(data.bestsellers),
+    categories: asArray(data.categories),
+  };
+}
+
 function readHomeCache() {
   try {
     const raw = sessionStorage.getItem(HOME_CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (Date.now() - parsed.ts > HOME_CACHE_TTL) return null;
-    return parsed.data;
+    return normalizeHomeData(parsed.data);
   } catch {
     return null;
   }
@@ -58,11 +69,12 @@ const Home = () => {
           api.get('/categories'),
         ]);
         if (cancelled) return;
-        const data = {
-          trending: t.data.products,
-          bestsellers: b.data.products,
-          categories: c.data.categories,
-        };
+        const data = normalizeHomeData({
+          trending: t.data?.products,
+          bestsellers: b.data?.products,
+          categories: c.data?.categories,
+        });
+        if (!data) return;
         setTrending(data.trending);
         setBestsellers(data.bestsellers);
         setCategories(data.categories);
