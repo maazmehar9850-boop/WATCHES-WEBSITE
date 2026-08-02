@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import WatchScene from './WatchScene';
 
-const INTRO_KEY = 'lw_intro_seen';
+const INTRO_KEY = 'lw_intro_seen_v3';
 
 function readIntroSeen() {
   try {
@@ -22,9 +22,6 @@ function useReducedMotionPref() {
   }, []);
 }
 
-/**
- * Full-bleed cinematic hero — R3F watch assembly + brand overlay.
- */
 export default function CinematicHero({ onComplete, luxuryLink = '/products' }) {
   const reducedMotion = useReducedMotionPref();
   const seen = useMemo(() => readIntroSeen(), []);
@@ -42,30 +39,36 @@ export default function CinematicHero({ onComplete, luxuryLink = '/products' }) 
     onComplete?.();
   }, [onComplete]);
 
+  const onWatchReady = useCallback(() => setShowUi(true), []);
+
   useEffect(() => {
     if (seen) onComplete?.();
   }, [seen, onComplete]);
 
-  const handleSkip = () => finish();
-
   return (
-    <section className="relative h-screen min-h-[640px] overflow-hidden bg-[#0B0B0B]">
+    <section className="relative h-[100svh] min-h-[600px] overflow-hidden bg-[#0B0B0B]">
       {active && (
         <div className="absolute inset-0 z-0">
           <Canvas
-            dpr={[1, 1.5]}
-            frameloop="demand"
+            dpr={[1, 1.25]}
+            frameloop="always"
+            performance={{ min: 0.5 }}
             gl={{
-              antialias: true,
+              antialias: false,
               alpha: false,
               powerPreference: 'high-performance',
               stencil: false,
+              depth: true,
             }}
-            camera={{ position: [0, 1.2, 5.2], fov: 42, near: 0.1, far: 40 }}
-            shadows
+            camera={{ position: [0, 1.1, 5], fov: 40, near: 0.1, far: 30 }}
           >
             <Suspense fallback={null}>
-              <WatchScene enabled={active} reducedMotion={reducedMotion} onComplete={finish} />
+              <WatchScene
+                enabled={active}
+                reducedMotion={reducedMotion}
+                onComplete={finish}
+                onWatchReady={onWatchReady}
+              />
             </Suspense>
           </Canvas>
         </div>
@@ -76,51 +79,61 @@ export default function CinematicHero({ onComplete, luxuryLink = '/products' }) 
           className="absolute inset-0 z-0"
           style={{
             background:
-              'radial-gradient(ellipse 70% 55% at 65% 45%, rgba(212,175,55,0.12), transparent 55%), linear-gradient(165deg, #141416 0%, #0B0B0B 50%, #080809 100%)',
+              'radial-gradient(ellipse 70% 55% at 50% 42%, rgba(212,175,55,0.14), transparent 55%), linear-gradient(160deg, #151518 0%, #0B0B0B 45%, #070708 100%)',
           }}
         />
       )}
 
+      {/* Soft vignette — centered so mobile pack stays readable */}
       <div
         className="pointer-events-none absolute inset-0 z-[1]"
         style={{
           background:
-            'radial-gradient(ellipse 80% 70% at 55% 50%, transparent 25%, rgba(0,0,0,0.55) 100%), linear-gradient(90deg, rgba(11,11,11,0.88) 0%, rgba(11,11,11,0.25) 42%, transparent 70%)',
+            'radial-gradient(ellipse 70% 60% at 50% 45%, transparent 30%, rgba(0,0,0,0.45) 100%), linear-gradient(180deg, rgba(11,11,11,0.55) 0%, transparent 28%, transparent 58%, rgba(11,11,11,0.75) 100%)',
         }}
       />
 
-      <div className="relative z-10 h-full section-pad page-wrap flex flex-col justify-center text-mist pt-20 pb-28 md:pb-20 md:max-w-[48%] lg:max-w-[42%]">
+      {/* Desktop: text left. Mobile: text bottom so box stays middle */}
+      <div className="relative z-10 h-full section-pad page-wrap flex flex-col justify-end md:justify-center pb-16 md:pb-24 pt-24 text-mist md:max-w-[46%] lg:max-w-[40%]">
         <motion.p
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display text-5xl sm:text-7xl lg:text-8xl text-gold leading-none mb-5"
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="font-display text-4xl sm:text-6xl lg:text-7xl xl:text-8xl text-gold leading-[0.95] mb-3 md:mb-4 text-center md:text-left"
         >
           Luxe Watches
         </motion.p>
         <motion.h1
-          initial={{ opacity: 0, y: 14 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-          className="font-sans text-base sm:text-lg tracking-[0.18em] uppercase max-w-md font-light text-mist/90"
+          transition={{ duration: 0.5, delay: 0.08 }}
+          className="font-sans text-xs sm:text-base tracking-[0.22em] uppercase font-light text-mist/85 text-center md:text-left"
         >
           Crafted. Assembled. Eternal.
         </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.18 }}
+          className="mt-3 text-mist/50 text-sm leading-relaxed max-w-sm hidden md:block"
+        >
+          Precision timepieces, revealed piece by piece.
+        </motion.p>
         <AnimatePresence>
           {showUi && (
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.55, delay: 0.08 }}
-              className="mt-9 flex flex-wrap gap-4"
+              transition={{ duration: 0.4 }}
+              className="mt-6 md:mt-8 flex flex-wrap gap-3 justify-center md:justify-start"
             >
               <Link to="/products" className="btn-primary btn-lux">
                 Explore Collection <ArrowRight size={16} />
               </Link>
               <Link
                 to={luxuryLink}
-                className="btn-outline border-mist/35 text-mist hover:bg-mist hover:text-ink btn-lux"
+                className="btn-outline border-gold/50 text-gold hover:bg-gold hover:text-ink btn-lux"
               >
                 Luxury Line
               </Link>
@@ -132,10 +145,10 @@ export default function CinematicHero({ onComplete, luxuryLink = '/products' }) 
       {active && !reducedMotion && (
         <button
           type="button"
-          onClick={handleSkip}
-          className="absolute bottom-8 right-6 z-20 text-xs tracking-[0.2em] uppercase text-mist/50 hover:text-gold transition-colors liquid-glass px-4 py-2"
+          onClick={finish}
+          className="absolute bottom-5 right-4 md:bottom-7 md:right-5 z-20 text-[11px] tracking-[0.22em] uppercase text-mist/45 hover:text-gold transition-colors liquid-glass px-3.5 py-2"
         >
-          Skip intro
+          Skip
         </button>
       )}
     </section>
