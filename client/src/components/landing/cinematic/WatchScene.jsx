@@ -24,28 +24,22 @@ function SceneContent({ partCount, reducedMotion, isMobile, stageX, onComplete, 
 
   return (
     <>
-      <color attach="background" args={['#0B0B0B']} />
-      <fog attach="fog" args={['#0B0B0B', 8, 16]} />
+      {/* Transparent clear — CSS hero bg shows through */}
+      <fog attach="fog" args={['#0B0B0B', 10, 18]} />
 
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[4, 6, 3]} intensity={1.7} color="#fff6e8" />
-      <directionalLight position={[-3, 2, -2]} intensity={0.65} color="#D4AF37" />
-      <pointLight position={[stageX, 2.4, 1.2]} intensity={0.85} color="#ffe7b0" distance={12} />
-      <spotLight
-        position={[stageX + 1, 4, 2]}
-        angle={0.4}
-        penumbra={0.8}
-        intensity={1.2}
-        color="#fff8f0"
-      />
+      <ambientLight intensity={0.48} />
+      <directionalLight position={[3.5, 5.5, 3]} intensity={1.75} color="#fff6e8" />
+      <directionalLight position={[-2.5, 2, -2]} intensity={0.7} color="#D4AF37" />
+      <pointLight position={[stageX, 2.2, 1.4]} intensity={0.9} color="#ffe7b0" distance={12} />
 
-      <group position={[stageX, isMobile ? 0.4 : 0.15, 0]}>
+      {/* Mobile: higher + slightly smaller so full watch fits the upper band */}
+      <group position={[stageX, isMobile ? 0.15 : 0.15, 0]} scale={isMobile ? 0.92 : 1}>
         <FloatingParts ref={partsRef} count={partCount} />
         <WatchAssembly ref={watchRef} />
-        <ContactShadows position={[0, -0.55, 0]} opacity={0.45} scale={8} blur={2.2} far={3.5} />
-        <mesh position={[0, -0.54, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <circleGeometry args={[1.6, 32]} />
-          <meshBasicMaterial color="#D4AF37" transparent opacity={0.07} />
+        <ContactShadows position={[0, -0.7, 0]} opacity={0.4} scale={7} blur={2} far={3} />
+        <mesh position={[0, -0.69, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[1.45, 32]} />
+          <meshBasicMaterial color="#D4AF37" transparent opacity={0.08} />
         </mesh>
       </group>
     </>
@@ -58,7 +52,7 @@ export default function WatchScene({ onComplete, onWatchReady, reducedMotion, en
     []
   );
   const stageX = isMobile ? 0 : 1.05;
-  const partCount = reducedMotion ? 0 : isMobile ? 40 : 80;
+  const partCount = reducedMotion ? 0 : isMobile ? 32 : 80;
 
   return (
     <SceneContent

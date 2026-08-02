@@ -142,6 +142,22 @@
       linear-gradient(180deg, rgba(11, 11, 11, 0.4) 0%, transparent 22%, transparent 70%, rgba(11, 11, 11, 0.65) 100%);
   }
 
+  @media (max-width: 768px) {
+    .hero-lux-vignette--mobile {
+      background:
+        radial-gradient(ellipse 90% 55% at 50% 28%, transparent 35%, rgba(0, 0, 0, 0.35) 100%),
+        linear-gradient(180deg, rgba(11, 11, 11, 0.25) 0%, transparent 18%, transparent 52%, rgba(11, 11, 11, 0.82) 100%);
+    }
+
+    .hero-lux-orb--a {
+      right: 50%;
+      top: 18%;
+      transform: translateX(50%);
+      width: min(70vw, 280px);
+      height: min(70vw, 280px);
+    }
+  }
+
   .glow-border {
     position: relative;
   }

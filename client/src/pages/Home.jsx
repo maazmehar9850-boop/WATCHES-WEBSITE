@@ -54,7 +54,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [revealed, setRevealed] = useState(() => {
     try {
-      return sessionStorage.getItem('lw_intro_seen_v4') === '1';
+      return sessionStorage.getItem('lw_intro_seen_v5') === '1';
     } catch {
       return false;
     }

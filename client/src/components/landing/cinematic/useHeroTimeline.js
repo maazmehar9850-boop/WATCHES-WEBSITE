@@ -3,7 +3,8 @@ import gsap from 'gsap';
 import { useThree, useFrame } from '@react-three/fiber';
 
 /**
- * Assemble → showcase spin → stay on poster (no box).
+ * Assemble → showcase spin → stay on poster.
+ * Mobile framing: centered, pulled back, full watch visible.
  */
 export function useHeroTimeline({
   watchRef,
@@ -23,7 +24,7 @@ export function useHeroTimeline({
 
   useFrame((_, delta) => {
     if (!idle.current || !watchRef.current) return;
-    watchRef.current.rotation.y += delta * 0.28;
+    watchRef.current.rotation.y += delta * 0.25;
   });
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export function useHeroTimeline({
       done.current = true;
       idle.current = true;
       try {
-        sessionStorage.setItem('lw_intro_seen_v4', '1');
+        sessionStorage.setItem('lw_intro_seen_v5', '1');
       } catch {
         /* ignore */
       }
@@ -42,30 +43,36 @@ export function useHeroTimeline({
     };
 
     const tick = () => invalidate();
-    const lookY = isMobile ? 0.25 : 0.2;
-    const watchScale = isMobile ? 1.15 : 1.32;
+
+    // Mobile: camera farther + look at watch center so bracelet isn't clipped
+    const lookY = isMobile ? 0.05 : 0.2;
+    const watchScale = isMobile ? 1.0 : 1.32;
     const camHome = isMobile
-      ? { x: 0, y: 1.0, z: 4.9 }
+      ? { x: 0, y: 0.45, z: 6.2 }
       : { x: stageX + 0.35, y: 1.05, z: 4.1 };
     const camSpin = isMobile
-      ? { x: 0.4, y: 1.1, z: 4.5 }
+      ? { x: 0.25, y: 0.55, z: 5.8 }
       : { x: stageX + 0.7, y: 1.2, z: 3.7 };
+
+    const applyCamera = (pos) => {
+      if (!camera) return;
+      camera.position.set(pos.x, pos.y, pos.z);
+      camera.lookAt(stageX, lookY, 0);
+      camera.updateProjectionMatrix();
+    };
 
     if (reducedMotion) {
       const watch = watchRef.current;
       if (watch) {
-        watch.rotation.set(0.18, 0.45, 0);
-        watch.position.set(0, 0.2, 0);
+        watch.rotation.set(0.15, 0.4, 0);
+        watch.position.set(0, 0.1, 0);
         watch.scale.setScalar(watchScale);
       }
       if (partsRef.current) partsRef.current.hide();
-      if (camera) {
-        camera.position.set(camHome.x, camHome.y, camHome.z);
-        camera.lookAt(stageX, lookY, 0);
-      }
+      applyCamera(camHome);
       idle.current = true;
       onWatchReady?.();
-      const t = gsap.delayedCall(0.35, finish);
+      const t = gsap.delayedCall(0.3, finish);
       return () => t.kill();
     }
 
@@ -86,17 +93,14 @@ export function useHeroTimeline({
       const prog = parts?.progress?.current || { t: 1, opacity: 0, spin: 0 };
 
       watch.scale.setScalar(0.02);
-      watch.rotation.set(0.2, 0, 0);
-      watch.position.set(0, 0.25, 0);
+      watch.rotation.set(0.15, 0, 0);
+      watch.position.set(0, 0.12, 0);
 
       prog.t = 0;
       prog.opacity = parts ? 1 : 0;
       prog.spin = 0;
 
-      if (camera) {
-        camera.position.set(camHome.x, camHome.y, camHome.z);
-        camera.lookAt(stageX, lookY, 0);
-      }
+      applyCamera(camHome);
 
       const tl = gsap.timeline({
         onUpdate: () => {
@@ -117,13 +121,17 @@ export function useHeroTimeline({
       tl.to(prog, { opacity: 0, duration: 0.45, ease: 'power1.in' }, 1.85);
       tl.call(() => onWatchReady?.(), null, 2.1);
 
-      tl.to(watch.rotation, { y: Math.PI * 2 + 0.4, duration: 2.4, ease: 'power1.inOut' }, 2.2);
-      tl.to(watch.rotation, { x: 0.22, duration: 1.2, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 2.2);
+      tl.to(watch.rotation, { y: Math.PI * 2 + 0.35, duration: 2.4, ease: 'power1.inOut' }, 2.2);
+      tl.to(
+        watch.rotation,
+        { x: isMobile ? 0.12 : 0.22, duration: 1.2, ease: 'sine.inOut', yoyo: true, repeat: 1 },
+        2.2
+      );
       if (camera) {
         tl.to(camera.position, { ...camSpin, duration: 2.4, ease: 'sine.inOut' }, 2.2);
         tl.to(camera.position, { ...camHome, duration: 1.0, ease: 'power2.inOut' }, 4.5);
       }
-      tl.to({}, { duration: 0.5 }, 5.4);
+      tl.to({}, { duration: 0.45 }, 5.4);
     };
 
     startId = requestAnimationFrame(runTimeline);
