@@ -28,8 +28,7 @@ const Navbar = () => {
   const [query, setQuery] = useState('');
 
   const isHome = location.pathname === '/';
-  // Light text on dark hero / dark theme; dark text only on light pages when scrolled
-  const lightText = theme === 'dark' || (isHome && !scrolled) || menuOpen;
+  const lightText = theme === 'dark' || isHome || menuOpen;
 
   useEffect(() => {
     let ticking = false;
@@ -70,18 +69,19 @@ const Navbar = () => {
   const navInk = lightText ? 'text-mist' : 'text-ink';
   const muted = lightText ? 'text-mist/75 hover:text-gold' : 'text-ink/70 hover:text-gold';
   const iconBtn = lightText
-    ? 'p-2 text-mist/90 hover:text-gold transition-colors'
-    : 'p-2 text-ink/80 hover:text-gold transition-colors';
+    ? 'p-2 text-mist/90 hover:text-gold transition-colors duration-200'
+    : 'p-2 text-ink/80 hover:text-gold transition-colors duration-200';
+
+  const headerSurface =
+    scrolled || menuOpen
+      ? isHome || theme === 'dark'
+        ? 'liquid-glass border-b border-gold/15 py-3'
+        : 'liquid-glass-light border-b border-black/10 py-3'
+      : 'bg-transparent py-5';
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 transition-[padding,background-color] duration-300 ${navInk} ${
-        scrolled || menuOpen
-          ? lightText
-            ? 'bg-ink border-b border-white/10 py-3'
-            : 'bg-mist border-b border-black/10 py-3'
-          : 'bg-transparent py-5'
-      }`}
+      className={`fixed top-0 inset-x-0 z-50 transition-[padding,background-color] duration-300 ${navInk} ${headerSurface}`}
     >
       <div className="section-pad page-wrap flex items-center justify-between gap-4">
         <button
@@ -93,8 +93,11 @@ const Navbar = () => {
           {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
 
-        <Link to="/" className="font-display text-2xl md:text-3xl tracking-wide text-gold">
-          LuxeWatch
+        <Link
+          to="/"
+          className="font-display text-2xl md:text-3xl tracking-wide text-gold hover:text-gold-light transition-colors"
+        >
+          Luxe Watches
         </Link>
 
         <nav className="hidden lg:flex items-center gap-8">
@@ -131,15 +134,11 @@ const Navbar = () => {
           </Link>
           {token ? (
             <div className="relative group">
-              <Link
-                to="/admin"
-                className={iconBtn}
-                aria-label="Account"
-              >
+              <Link to="/admin" className={iconBtn} aria-label="Account">
                 <User size={20} />
               </Link>
               <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <div className="bg-ink-soft border border-white/10 text-mist py-2 min-w-[160px] text-sm shadow-xl">
+                <div className="liquid-glass text-mist py-2 min-w-[160px] text-sm shadow-xl">
                   <p className="px-4 py-1 text-mist/50 truncate">{user?.name}</p>
                   {user?.role === 'admin' && (
                     <Link to="/admin" className="flex items-center gap-2 px-4 py-2 text-mist/85 hover:text-gold">
@@ -173,7 +172,7 @@ const Navbar = () => {
               placeholder="Search watches..."
               className="input-field"
             />
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="btn-primary btn-lux">
               Search
             </button>
           </div>
@@ -181,13 +180,13 @@ const Navbar = () => {
       )}
 
       {menuOpen && (
-        <nav className="lg:hidden section-pad py-6 flex flex-col gap-4 border-t border-white/10 bg-ink text-mist">
+        <nav className="lg:hidden section-pad py-6 flex flex-col gap-4 border-t border-gold/10 liquid-glass text-mist">
           {links.map((l) => (
             <Link
               key={l.label}
               to={l.to}
               onClick={() => setMenuOpen(false)}
-              className="text-lg tracking-widest uppercase text-mist/90 hover:text-gold"
+              className="text-lg tracking-widest uppercase text-mist/90 hover:text-gold transition-colors"
             >
               {l.label}
             </Link>
@@ -199,4 +198,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

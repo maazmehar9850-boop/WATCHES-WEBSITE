@@ -6,11 +6,12 @@ import toast from 'react-hot-toast';
 import { addToCart } from '../store/cartSlice';
 import { mediaUrl, formatPrice, PLACEHOLDER_IMG } from '../api/axios';
 
-const ProductCard = memo(function ProductCard({ product }) {
+const ProductCard = memo(function ProductCard({ product, luxury = false }) {
   const dispatch = useDispatch();
 
   const handleCart = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     if (product.stock < 1) return toast.error('Out of stock');
     dispatch(
       addToCart({
@@ -31,9 +32,13 @@ const ProductCard = memo(function ProductCard({ product }) {
       : 0;
 
   return (
-    <div className="group">
+    <div className={`group ${luxury ? 'glow-border' : ''}`}>
       <Link to={`/product/${product.slug || product._id}`} className="block">
-        <div className="relative aspect-[3/4] overflow-hidden bg-mist-soft dark:bg-ink-soft mb-4">
+        <div
+          className={`relative aspect-[3/4] overflow-hidden mb-4 ${
+            luxury ? 'bg-ink-soft ring-1 ring-gold/10' : 'bg-mist-soft dark:bg-ink-soft'
+          }`}
+        >
           <img
             src={mediaUrl(product.images?.[0])}
             alt={product.name}
@@ -43,8 +48,11 @@ const ProductCard = memo(function ProductCard({ product }) {
               e.currentTarget.onerror = null;
               e.currentTarget.src = PLACEHOLDER_IMG;
             }}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
+          {luxury && (
+            <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-tr from-transparent via-gold/10 to-transparent" />
+          )}
           {discount > 0 && (
             <span className="absolute top-3 left-3 bg-gold text-ink text-xs font-semibold px-2 py-1">
               -{discount}%
@@ -54,7 +62,11 @@ const ProductCard = memo(function ProductCard({ product }) {
             <button
               type="button"
               onClick={handleCart}
-              className="p-2 bg-mist/95 dark:bg-ink/90 shadow-sm text-ink dark:text-mist"
+              className={`p-2 shadow-sm transition-transform hover:scale-110 ${
+                luxury
+                  ? 'bg-ink/90 text-gold border border-gold/30'
+                  : 'bg-mist/95 dark:bg-ink/90 text-ink dark:text-mist'
+              }`}
               aria-label="Add to cart"
             >
               <ShoppingBag size={16} />
@@ -67,7 +79,7 @@ const ProductCard = memo(function ProductCard({ product }) {
           )}
         </div>
         <p className="text-xs uppercase tracking-[0.2em] text-slate-mute mb-1">
-          {product.brand || 'LuxeWatch'}
+          {product.brand || 'Luxe Watches'}
         </p>
         <h3 className="font-display text-lg leading-snug group-hover:text-gold transition-colors line-clamp-2">
           {product.name}
