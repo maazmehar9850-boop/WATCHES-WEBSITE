@@ -53,10 +53,18 @@
 
   /* iOS-inspired liquid glass — GPU-friendly blur */
   .liquid-glass {
-    background: rgba(20, 20, 22, 0.55);
-    border: 1px solid rgba(212, 175, 55, 0.18);
-    backdrop-filter: blur(18px) saturate(1.35);
-    -webkit-backdrop-filter: blur(18px) saturate(1.35);
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(20, 20, 22, 0.55) 40%,
+      rgba(12, 12, 14, 0.72) 100%
+    );
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    backdrop-filter: blur(22px) saturate(1.45);
+    -webkit-backdrop-filter: blur(22px) saturate(1.45);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   .liquid-glass-light {
@@ -64,6 +72,74 @@
     border: 1px solid rgba(0, 0, 0, 0.08);
     backdrop-filter: blur(18px) saturate(1.2);
     -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  }
+
+  .liquid-panel {
+    border-radius: 2px;
+  }
+
+  /* Cinematic hero atmosphere */
+  .hero-lux-bg {
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(212, 175, 55, 0.1), transparent 55%),
+      radial-gradient(ellipse 50% 45% at 15% 80%, rgba(80, 60, 20, 0.25), transparent 50%),
+      linear-gradient(155deg, #121214 0%, #0B0B0B 42%, #070708 100%);
+  }
+
+  .hero-lux-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+  }
+
+  .hero-lux-orb--a {
+    width: min(55vw, 420px);
+    height: min(55vw, 420px);
+    right: 8%;
+    top: 28%;
+    background: rgba(212, 175, 55, 0.16);
+  }
+
+  .hero-lux-orb--b {
+    width: min(40vw, 280px);
+    height: min(40vw, 280px);
+    left: 5%;
+    bottom: 10%;
+    background: rgba(212, 175, 55, 0.08);
+  }
+
+  .hero-lux-orb--c {
+    width: min(30vw, 200px);
+    height: min(30vw, 200px);
+    right: 28%;
+    bottom: 18%;
+    background: rgba(255, 248, 230, 0.05);
+  }
+
+  .hero-lux-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    background-image:
+      linear-gradient(rgba(212, 175, 55, 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212, 175, 55, 0.35) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, black, transparent);
+  }
+
+  .hero-lux-noise {
+    position: absolute;
+    inset: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .hero-lux-vignette {
+    background:
+      radial-gradient(ellipse 75% 65% at 55% 45%, transparent 25%, rgba(0, 0, 0, 0.5) 100%),
+      linear-gradient(90deg, rgba(11, 11, 11, 0.55) 0%, transparent 42%),
+      linear-gradient(180deg, rgba(11, 11, 11, 0.4) 0%, transparent 22%, transparent 70%, rgba(11, 11, 11, 0.65) 100%);
   }
 
   .glow-border {

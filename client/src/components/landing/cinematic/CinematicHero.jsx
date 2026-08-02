@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import WatchScene from './WatchScene';
 
-const INTRO_KEY = 'lw_intro_seen_v3';
+const INTRO_KEY = 'lw_intro_seen_v4';
 
 function readIntroSeen() {
   try {
@@ -25,17 +25,20 @@ function useReducedMotionPref() {
 export default function CinematicHero({ onComplete, luxuryLink = '/products' }) {
   const reducedMotion = useReducedMotionPref();
   const seen = useMemo(() => readIntroSeen(), []);
-  const [active, setActive] = useState(() => !seen);
+  const [introDone, setIntroDone] = useState(() => seen);
   const [showUi, setShowUi] = useState(() => seen || reducedMotion);
+  // Keep canvas forever so assembled watch stays on the poster
+  const [playIntro, setPlayIntro] = useState(() => !seen);
 
-  const finish = useCallback(() => {
+  const finishIntro = useCallback(() => {
     try {
       sessionStorage.setItem(INTRO_KEY, '1');
     } catch {
       /* ignore */
     }
     setShowUi(true);
-    setActive(false);
+    setIntroDone(true);
+    setPlayIntro(false);
     onComplete?.();
   }, [onComplete]);
 
@@ -46,106 +49,94 @@ export default function CinematicHero({ onComplete, luxuryLink = '/products' }) 
   }, [seen, onComplete]);
 
   return (
-    <section className="relative h-[100svh] min-h-[600px] overflow-hidden bg-[#0B0B0B]">
-      {active && (
-        <div className="absolute inset-0 z-0">
-          <Canvas
-            dpr={[1, 1.25]}
-            frameloop="always"
-            performance={{ min: 0.5 }}
-            gl={{
-              antialias: false,
-              alpha: false,
-              powerPreference: 'high-performance',
-              stencil: false,
-              depth: true,
-            }}
-            camera={{ position: [0, 1.1, 5], fov: 40, near: 0.1, far: 30 }}
-          >
-            <Suspense fallback={null}>
-              <WatchScene
-                enabled={active}
-                reducedMotion={reducedMotion}
-                onComplete={finish}
-                onWatchReady={onWatchReady}
-              />
-            </Suspense>
-          </Canvas>
-        </div>
-      )}
-
-      {!active && (
-        <div
-          className="absolute inset-0 z-0"
-          style={{
-            background:
-              'radial-gradient(ellipse 70% 55% at 50% 42%, rgba(212,175,55,0.14), transparent 55%), linear-gradient(160deg, #151518 0%, #0B0B0B 45%, #070708 100%)',
-          }}
-        />
-      )}
-
-      {/* Soft vignette — centered so mobile pack stays readable */}
-      <div
-        className="pointer-events-none absolute inset-0 z-[1]"
-        style={{
-          background:
-            'radial-gradient(ellipse 70% 60% at 50% 45%, transparent 30%, rgba(0,0,0,0.45) 100%), linear-gradient(180deg, rgba(11,11,11,0.55) 0%, transparent 28%, transparent 58%, rgba(11,11,11,0.75) 100%)',
-        }}
-      />
-
-      {/* Desktop: text left. Mobile: text bottom so box stays middle */}
-      <div className="relative z-10 h-full section-pad page-wrap flex flex-col justify-end md:justify-center pb-16 md:pb-24 pt-24 text-mist md:max-w-[46%] lg:max-w-[40%]">
-        <motion.p
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display text-4xl sm:text-6xl lg:text-7xl xl:text-8xl text-gold leading-[0.95] mb-3 md:mb-4 text-center md:text-left"
-        >
-          Luxe Watches
-        </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.08 }}
-          className="font-sans text-xs sm:text-base tracking-[0.22em] uppercase font-light text-mist/85 text-center md:text-left"
-        >
-          Crafted. Assembled. Eternal.
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.18 }}
-          className="mt-3 text-mist/50 text-sm leading-relaxed max-w-sm hidden md:block"
-        >
-          Precision timepieces, revealed piece by piece.
-        </motion.p>
-        <AnimatePresence>
-          {showUi && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="mt-6 md:mt-8 flex flex-wrap gap-3 justify-center md:justify-start"
-            >
-              <Link to="/products" className="btn-primary btn-lux">
-                Explore Collection <ArrowRight size={16} />
-              </Link>
-              <Link
-                to={luxuryLink}
-                className="btn-outline border-gold/50 text-gold hover:bg-gold hover:text-ink btn-lux"
-              >
-                Luxury Line
-              </Link>
-            </motion.div>
-          )}
-        </AnimatePresence>
+    <section className="relative h-[100svh] min-h-[640px] overflow-hidden bg-[#0B0B0B]">
+      {/* Professional layered background */}
+      <div className="absolute inset-0 z-0 hero-lux-bg" aria-hidden>
+        <div className="hero-lux-orb hero-lux-orb--a" />
+        <div className="hero-lux-orb hero-lux-orb--b" />
+        <div className="hero-lux-orb hero-lux-orb--c" />
+        <div className="hero-lux-grid" />
+        <div className="hero-lux-noise" />
       </div>
 
-      {active && !reducedMotion && (
+      {/* Watch canvas — always mounted after first load so poster keeps the watch */}
+      <div
+        className={`absolute inset-0 z-[1] transition-opacity duration-700 ${
+          introDone || playIntro ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        <Canvas
+          dpr={[1, 1.5]}
+          frameloop="always"
+          performance={{ min: 0.6 }}
+          gl={{
+            antialias: true,
+            alpha: true,
+            powerPreference: 'high-performance',
+            stencil: false,
+          }}
+          camera={{ position: [1.2, 1.05, 4.3], fov: 38, near: 0.1, far: 30 }}
+          style={{ background: 'transparent' }}
+        >
+          <Suspense fallback={null}>
+            <WatchScene
+              enabled={playIntro || introDone || seen}
+              reducedMotion={reducedMotion || seen}
+              onComplete={finishIntro}
+              onWatchReady={onWatchReady}
+            />
+          </Suspense>
+        </Canvas>
+      </div>
+
+      {/* Liquid vignette */}
+      <div className="pointer-events-none absolute inset-0 z-[2] hero-lux-vignette" />
+
+      {/* Liquid glass brand panel */}
+      <div className="relative z-10 h-full section-pad page-wrap flex flex-col justify-end md:justify-center pb-14 md:pb-0 pt-24">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          className="liquid-glass liquid-panel glow-border max-w-xl md:max-w-[42%] p-6 sm:p-8 md:p-10"
+        >
+          <p className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-gold leading-[0.95] mb-3">
+            Luxe Watches
+          </p>
+          <h1 className="font-sans text-[11px] sm:text-sm tracking-[0.24em] uppercase font-light text-mist/80">
+            Crafted. Assembled. Eternal.
+          </h1>
+          <p className="mt-4 text-mist/50 text-sm leading-relaxed max-w-sm hidden sm:block">
+            Precision timepieces for collectors who measure life in moments that matter.
+          </p>
+          <AnimatePresence>
+            {showUi && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="mt-7 flex flex-wrap gap-3"
+              >
+                <Link to="/products" className="btn-primary btn-lux">
+                  Explore Collection <ArrowRight size={16} />
+                </Link>
+                <Link
+                  to={luxuryLink}
+                  className="btn-outline border-gold/45 text-gold hover:bg-gold hover:text-ink btn-lux liquid-glass"
+                >
+                  Luxury Line
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+
+      {playIntro && !reducedMotion && (
         <button
           type="button"
-          onClick={finish}
+          onClick={finishIntro}
           className="absolute bottom-5 right-4 md:bottom-7 md:right-5 z-20 text-[11px] tracking-[0.22em] uppercase text-mist/45 hover:text-gold transition-colors liquid-glass px-3.5 py-2"
         >
           Skip

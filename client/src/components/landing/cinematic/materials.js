@@ -1,44 +1,36 @@
 import * as THREE from 'three';
 
-/** Shared materials — MeshStandard only (no physical/transmission = less GPU). */
+/** Premium shared materials */
 export const metal = new THREE.MeshStandardMaterial({
-  color: '#d0d4da',
-  metalness: 0.88,
-  roughness: 0.18,
+  color: '#e2e6ec',
+  metalness: 0.94,
+  roughness: 0.16,
 });
 
 export const goldMetal = new THREE.MeshStandardMaterial({
   color: '#D4AF37',
-  metalness: 0.92,
-  roughness: 0.24,
+  metalness: 0.96,
+  roughness: 0.2,
   emissive: '#D4AF37',
-  emissiveIntensity: 0.08,
+  emissiveIntensity: 0.12,
 });
 
 export const dialMat = new THREE.MeshStandardMaterial({
-  color: '#0c0c0e',
-  metalness: 0.4,
-  roughness: 0.5,
+  color: '#0a0a0c',
+  metalness: 0.45,
+  roughness: 0.42,
 });
 
 export const glassMat = new THREE.MeshStandardMaterial({
-  color: '#e8eef8',
-  metalness: 0.1,
-  roughness: 0.05,
+  color: '#f2f6ff',
+  metalness: 0.05,
+  roughness: 0.04,
   transparent: true,
-  opacity: 0.22,
+  opacity: 0.28,
 });
 
-export const boxMat = new THREE.MeshStandardMaterial({
-  color: '#121214',
-  metalness: 0.2,
-  roughness: 0.65,
-});
-
-export const boxGold = new THREE.MeshStandardMaterial({
-  color: '#D4AF37',
-  metalness: 0.9,
-  roughness: 0.3,
-  emissive: '#D4AF37',
-  emissiveIntensity: 0.2,
+export const strapMat = new THREE.MeshStandardMaterial({
+  color: '#1a1a1e',
+  metalness: 0.35,
+  roughness: 0.55,
 });
