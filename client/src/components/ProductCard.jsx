@@ -36,7 +36,9 @@ const ProductCard = memo(function ProductCard({ product, luxury = false }) {
       <Link to={`/product/${product.slug || product._id}`} className="block">
         <div
           className={`relative aspect-[3/4] overflow-hidden mb-4 ${
-            luxury ? 'bg-ink-soft ring-1 ring-gold/10' : 'bg-mist-soft dark:bg-ink-soft'
+            luxury
+              ? 'bg-[#0a0a0c] ring-1 ring-gold/15 liquid-panel'
+              : 'bg-mist-soft dark:bg-ink-soft'
           }`}
         >
           <img

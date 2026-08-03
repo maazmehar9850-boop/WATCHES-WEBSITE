@@ -20,7 +20,7 @@ export function SectionHeader({ title, subtitle, action }) {
 
 export function EmptyRow({ label = 'Collection arriving soon' }) {
   return (
-    <div className="liquid-glass glow-border rounded-sm py-16 text-center text-mist/50 text-sm tracking-widest uppercase">
+    <div className="liquid-glass glow-border liquid-panel py-16 text-center text-mist/50 text-sm tracking-widest uppercase">
       {label}
     </div>
   );

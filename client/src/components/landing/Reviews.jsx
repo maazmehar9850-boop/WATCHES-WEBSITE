@@ -41,7 +41,7 @@ export default function Reviews() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.45, delay: i * 0.08 }}
-            className="liquid-glass glow-border p-8 flex flex-col"
+            className="liquid-glass liquid-panel glow-border p-8 flex flex-col"
           >
             <p className="text-mist/80 text-sm leading-relaxed flex-1 font-light">“{r.quote}”</p>
             <footer className="mt-8 pt-5 border-t border-gold/15">

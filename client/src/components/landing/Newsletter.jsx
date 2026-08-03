@@ -27,7 +27,7 @@ export default function Newsletter() {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="liquid-glass glow-border relative overflow-hidden px-6 py-14 md:px-14 md:py-16 text-center"
+        className="liquid-glass liquid-panel glow-border relative overflow-hidden px-6 py-14 md:px-14 md:py-16 text-center"
       >
         <div
           className="pointer-events-none absolute inset-0 opacity-40"

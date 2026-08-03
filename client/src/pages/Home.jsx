@@ -10,6 +10,7 @@ import Reviews from '../components/landing/Reviews';
 import Newsletter from '../components/landing/Newsletter';
 
 const CinematicHero = lazy(() => import('../components/landing/cinematic/CinematicHero'));
+const CraftStory = lazy(() => import('../components/landing/CraftStory'));
 
 const HOME_CACHE_KEY = 'lw_home_v3';
 const HOME_CACHE_TTL = 5 * 60 * 1000;
@@ -60,7 +61,6 @@ const Home = () => {
     }
   });
 
-  // Force dark luxury canvas on the landing experience
   useEffect(() => {
     const root = document.documentElement;
     const hadDark = root.classList.contains('dark');
@@ -113,7 +113,6 @@ const Home = () => {
     };
 
     load();
-
     return () => {
       cancelled = true;
     };
@@ -125,17 +124,20 @@ const Home = () => {
   const luxuryLink = luxuryCat ? `/products?category=${luxuryCat._id}` : '/products?keyword=luxury';
 
   return (
-    <div className="bg-[#0B0B0B] text-mist min-h-screen">
-      <Suspense fallback={<div className="h-screen min-h-[640px] bg-[#0B0B0B]" />}>
+    <div className="bg-[#050506] text-mist min-h-screen">
+      <Suspense fallback={<div className="h-screen min-h-[640px] bg-[#050506]" />}>
         <CinematicHero onComplete={onIntroComplete} luxuryLink={luxuryLink} />
       </Suspense>
 
       <motion.div
         initial={false}
-        animate={{ opacity: revealed ? 1 : 0.35 }}
+        animate={{ opacity: revealed ? 1 : 0.4 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         style={{ pointerEvents: revealed ? 'auto' : 'none' }}
       >
+        <Suspense fallback={null}>
+          <CraftStory />
+        </Suspense>
         <FeaturedWatches products={featured} loading={loading} />
         <NewArrivals products={newest} loading={loading} />
         <BestSellers products={bestsellers} loading={loading} />

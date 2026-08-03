@@ -56,7 +56,7 @@ export default function CinematicHero({ onComplete, luxuryLink = '/products' }) 
   }, [seen, onComplete]);
 
   return (
-    <section className="relative h-[100svh] min-h-[640px] overflow-hidden bg-[#0B0B0B]">
+    <section className="relative h-[100svh] min-h-[640px] overflow-hidden bg-[#050506]">
       <div className="absolute inset-0 z-0 hero-lux-bg" aria-hidden>
         <div className="hero-lux-orb hero-lux-orb--a" />
         <div className="hero-lux-orb hero-lux-orb--b" />

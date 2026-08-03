@@ -78,18 +78,25 @@
     border-radius: 2px;
   }
 
-  /* Cinematic hero atmosphere */
+  /* Cinematic hero atmosphere — black shade poster */
   .hero-lux-bg {
     background:
-      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(212, 175, 55, 0.1), transparent 55%),
-      radial-gradient(ellipse 50% 45% at 15% 80%, rgba(80, 60, 20, 0.25), transparent 50%),
-      linear-gradient(155deg, #121214 0%, #0B0B0B 42%, #070708 100%);
+      radial-gradient(ellipse 70% 55% at 72% 38%, rgba(255, 255, 255, 0.04), transparent 55%),
+      radial-gradient(ellipse 55% 45% at 18% 78%, rgba(40, 40, 44, 0.55), transparent 50%),
+      linear-gradient(160deg, #0e0e10 0%, #080809 38%, #050506 68%, #030304 100%);
+  }
+
+  .craft-story-bg {
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 45%, rgba(212, 175, 55, 0.07), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 20% 60%, rgba(255, 255, 255, 0.03), transparent 50%),
+      linear-gradient(180deg, #080809 0%, #050506 50%, #030304 100%);
   }
 
   .hero-lux-orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(60px);
+    filter: blur(70px);
     pointer-events: none;
   }
 
@@ -98,7 +105,7 @@
     height: min(55vw, 420px);
     right: 8%;
     top: 28%;
-    background: rgba(212, 175, 55, 0.16);
+    background: rgba(255, 255, 255, 0.045);
   }
 
   .hero-lux-orb--b {
@@ -106,7 +113,7 @@
     height: min(40vw, 280px);
     left: 5%;
     bottom: 10%;
-    background: rgba(212, 175, 55, 0.08);
+    background: rgba(212, 175, 55, 0.05);
   }
 
   .hero-lux-orb--c {
@@ -114,17 +121,17 @@
     height: min(30vw, 200px);
     right: 28%;
     bottom: 18%;
-    background: rgba(255, 248, 230, 0.05);
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .hero-lux-grid {
     position: absolute;
     inset: 0;
-    opacity: 0.04;
+    opacity: 0.035;
     background-image:
-      linear-gradient(rgba(212, 175, 55, 0.35) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(212, 175, 55, 0.35) 1px, transparent 1px);
-    background-size: 64px 64px;
+      linear-gradient(rgba(255, 255, 255, 0.25) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.25) 1px, transparent 1px);
+    background-size: 72px 72px;
     mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, black, transparent);
   }
 

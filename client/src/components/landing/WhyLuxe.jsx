@@ -47,7 +47,7 @@ export default function WhyLuxe() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-20px' }}
             transition={{ duration: 0.45, delay: i * 0.06 }}
-            className="liquid-glass glow-border p-6 md:p-7 group"
+            className="liquid-glass liquid-panel glow-border p-6 md:p-7 group"
           >
             <p.icon
               className="text-gold mb-5 transition-transform duration-300 group-hover:scale-110"
